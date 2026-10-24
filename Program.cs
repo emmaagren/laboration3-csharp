@@ -1,5 +1,20 @@
-﻿// Skapar en lista som kan innehålla flera gästboksinlägg.
+﻿using System.Text.Json;
+
+// Filen där gästbokens inlägg ska sparas.
+string filePath = "guestbook.json";
+
+// Skapar en lista som kan innehålla flera gästboksinlägg.
 List<GuestbookEntry> entries = new List<GuestbookEntry>();
+
+// Kontrollerar om det redan finns en sparad gästbok.
+if (File.Exists(filePath))
+{
+    // Läser innehållet från JSON-filen.
+    string json = File.ReadAllText(filePath);
+
+    // Omvandlar JSON-texten till en lista med gästboksinlägg.
+    entries = JsonSerializer.Deserialize<List<GuestbookEntry>>(json) ?? new List<GuestbookEntry>();
+}
 
 // Håller programmet igång tills användaren väljer att avsluta.
 bool running = true;
@@ -64,6 +79,12 @@ while (running)
             // Lägger till inlägget i listan.
             entries.Add(entry);
 
+            // Omvandlar listan med inlägg till JSON.
+            string json = JsonSerializer.Serialize(entries);
+
+            // Sparar JSON-texten i en fil.
+            File.WriteAllText(filePath, json);
+
             Console.WriteLine("Inlägget har lagts till!");
             break;
 
@@ -94,6 +115,12 @@ while (running)
 
             // Tar bort det valda inlägget.
             entries.RemoveAt(index);
+
+            // Omvandlar den uppdaterade listan till JSON.
+            string updatedJson = JsonSerializer.Serialize(entries);
+
+            // Sparar den uppdaterade listan i JSON-filen.
+            File.WriteAllText(filePath, updatedJson);
 
             Console.WriteLine("Inlägget har tagits bort!");
             break;

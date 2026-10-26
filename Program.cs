@@ -6,14 +6,25 @@ string filePath = "guestbook.json";
 // Skapar en lista som kan innehålla flera gästboksinlägg.
 List<GuestbookEntry> entries = new List<GuestbookEntry>();
 
-// Kontrollerar om det redan finns en sparad gästbok.
+// Kontrollerar om det finns en sparad gästbok.
 if (File.Exists(filePath))
 {
-    // Läser innehållet från JSON-filen.
-    string json = File.ReadAllText(filePath);
+    try
+    {
+        // Läser innehållet från JSON-filen.
+        string json = File.ReadAllText(filePath);
 
-    // Omvandlar JSON-texten till en lista med gästboksinlägg.
-    entries = JsonSerializer.Deserialize<List<GuestbookEntry>>(json) ?? new List<GuestbookEntry>();
+        // Omvandlar JSON-texten till en lista med gästboksinlägg.
+        entries = JsonSerializer.Deserialize<List<GuestbookEntry>>(json)
+                  ?? new List<GuestbookEntry>();
+    }
+    catch (JsonException)
+    {
+        // Hanterar fel om JSON-filen innehåller ogiltig data.
+        Console.WriteLine("Fel: Kunde inte läsa gästbokens JSON-fil.");
+        Console.WriteLine("Tryck Enter för att fortsätta med en tom gästbok.");
+        Console.ReadLine();
+    }
 }
 
 // Håller programmet igång tills användaren väljer att avsluta.

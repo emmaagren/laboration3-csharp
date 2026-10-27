@@ -25,6 +25,14 @@ if (File.Exists(filePath))
         Console.WriteLine("Tryck Enter för att fortsätta med en tom gästbok.");
         Console.ReadLine();
     }
+
+    catch (IOException)
+    {
+        // Hanterar fel som uppstår när JSON-filen inte kan läsas.
+        Console.WriteLine("Fel: Det gick inte att läsa gästbokens fil.");
+        Console.WriteLine("Tryck Enter för att fortsätta med en tom gästbok.");
+        Console.ReadLine();
+    }
 }
 
 // Håller programmet igång tills användaren väljer att avsluta.
@@ -93,10 +101,22 @@ while (running)
             // Omvandlar listan med inlägg till JSON.
             string json = JsonSerializer.Serialize(entries);
 
-            // Sparar JSON-texten i en fil.
-            File.WriteAllText(filePath, json);
-
-            Console.WriteLine("Inlägget har lagts till!");
+            // Försöker spara inläggen i JSON-filen.
+            try
+            {
+                File.WriteAllText(filePath, json);
+                Console.WriteLine("Inlägget har lagts till!");
+            }
+            catch (IOException)
+            {
+                // Hanterar fel som uppstår när filen inte kan sparas.
+                Console.WriteLine("Fel: Det gick inte att spara gästboken.");
+            }
+            catch (UnauthorizedAccessException)
+            {
+                // Hanterar fel om programmet saknar behörighet att skriva till filen.
+                Console.WriteLine("Fel: Programmet saknar behörighet att spara filen.");
+            }
             break;
 
         case "3":
@@ -130,10 +150,22 @@ while (running)
             // Omvandlar den uppdaterade listan till JSON.
             string updatedJson = JsonSerializer.Serialize(entries);
 
-            // Sparar den uppdaterade listan i JSON-filen.
-            File.WriteAllText(filePath, updatedJson);
-
-            Console.WriteLine("Inlägget har tagits bort!");
+            // Försöker spara den uppdaterade gästboken.
+            try
+            {
+                File.WriteAllText(filePath, updatedJson);
+                Console.WriteLine("Inlägget har tagits bort!");
+            }
+            catch (IOException)
+            {
+                // Hanterar fel om filen inte kan sparas.
+                Console.WriteLine("Fel: Det gick inte att spara ändringarna.");
+            }
+            catch (UnauthorizedAccessException)
+            {
+                // Hanterar fel om programmet saknar behörighet.
+                Console.WriteLine("Fel: Programmet saknar behörighet att spara ändringarna.");
+            }
             break;
 
         case "4":
